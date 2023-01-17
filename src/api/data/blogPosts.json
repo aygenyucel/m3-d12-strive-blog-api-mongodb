@@ -1,0 +1,42 @@
+[
+  {
+    "category": "business",
+    "title": "Elon Musk’s security team sought for questioning over incident he cited as reason to ban journalists",
+    "cover": "https://media.cnn.com/api/v1/images/stellar/prod/221216082156-02-elon-musk-0613-file.jpg?c=16x9&q=h_270,w_480,c_fill",
+    "readTime": { "value": 2, "unit": "minute" },
+    "author": {
+      "name": "Jon Passantino",
+      "avatar": "https://ui-avatars.com/api/?name=Jon+Passantino"
+    },
+    "content": "HTML",
+    "createdAt": "2022-12-21T14:24:53.772Z",
+    "_id": "2phjqieclbxqy1hp"
+  },
+  {
+    "category": "sports",
+    "title": "Messi says wants to continue 'living a few more games being world champion'",
+    "cover": "https://cdn.cnn.com/cnnnext/dam/assets/221218155450-29-world-cup-final-1218-large-tease.jpg",
+    "readTime": { "value": 2, "unit": "minute" },
+    "author": {
+      "name": "Matias Grez",
+      "avatar": "https://ui-avatars.com/api/?name=Matias+Grez"
+    },
+    "content": "HTML",
+    "createdAt": "2022-12-21T14:32:12.174Z",
+    "_id": "2phjqdr0lbxr7frj"
+  },
+  {
+    "category": "tech",
+    "title": "China wants Covid patients to go to work. The public isn’t so sure",
+    "cover": "https://media.cnn.com/api/v1/images/stellar/prod/221220223031-01-china-covid-commuters-122022-restricted.jpg?c=16x9&q=h_270,w_480,c_fill",
+    "readTime": { "value": 2, "unit": "minute" },
+    "author": {
+      "name": "Jessie Yeung",
+      "avatar": "https://ui-avatars.com/api/?name=Jessie+Yeung"
+    },
+    "content": "HTML",
+    "createdAt": "2022-12-21T14:34:01.643Z",
+    "_id": "2phjq5z8lbxr9s8c",
+    "updatedAt": "2022-12-21T14:44:11.007Z"
+  }
+]
