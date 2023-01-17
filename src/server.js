@@ -3,8 +3,13 @@ import listEndpoints from "express-list-endpoints";
 import authorsRouter from "./api/authors/index.js";
 import blogPostsRouter from "./api/blogPosts/index.js";
 import cors from "cors";
-import { notFoundHandler } from "./errorHandlers.js";
+import {
+  badRequestHandler,
+  genericErrorHandler,
+  notFoundHandler,
+} from "./errorHandlers.js";
 import filesRouter from "./api/files/index.js";
+import mongoose from "mongoose";
 
 const server = express();
 // server waits for request
@@ -68,9 +73,18 @@ server.use("/files", filesRouter);
 
 // ************************** ERROR HANDLERS ************************
 server.use(notFoundHandler); //404
+server.use(badRequestHandler);
+server.use(genericErrorHandler);
 
 // **************************************************
-server.listen(port, () => {
-  console.table(listEndpoints(server));
-  console.log("Server is running on port:", port);
+
+mongoose.set("strictQuery", false);
+mongoose.connect(process.env.MONGO_URL);
+
+mongoose.connection.on("connected", () => {
+  console.log("Successfully connected to Mongo!");
+  server.listen(port, () => {
+    console.table(listEndpoints(server));
+    console.log("Server is running on port:", port);
+  });
 });

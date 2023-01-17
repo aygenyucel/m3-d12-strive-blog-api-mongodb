@@ -79,6 +79,7 @@ blogPostsRouter.put("/:blogPostId", (req, res) => {
   writeBlogPosts(blogPostArray);
   res.send(updatedBlogPost);
 });
+
 //DELETE http://localhost:3001/blogPosts/:blogPostId
 blogPostsRouter.delete("/:blogPostId", (req, res) => {
   const blogPostsArray = getBlogPosts();

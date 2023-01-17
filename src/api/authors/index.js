@@ -18,14 +18,14 @@ const authorsRouter = express.Router();
 
 /****************************** */
 /* how I get the authors.json path? */
-console.log("current file url (url, not path!):", import.meta.url);
+/* console.log("current file url (url, not path!):", import.meta.url);
 console.log("current file path: ", fileURLToPath(import.meta.url));
 //parent's folder path
 console.log("parent folder path: ", dirname(fileURLToPath(import.meta.url)));
 console.log(
   "target: ",
   join(dirname(fileURLToPath(import.meta.url)), "authors.json")
-);
+); */
 
 /****************************** */
 
