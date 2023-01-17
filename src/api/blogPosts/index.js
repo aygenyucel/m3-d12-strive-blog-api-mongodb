@@ -9,12 +9,11 @@
 */
 
 import express from "express";
-import { dirname, join } from "path";
-import { fileURLToPath } from "url";
 import fs from "fs";
-import uniqid from "uniqid";
 import httpErrors from "http-errors";
 import { blogPostsJSONPath } from "../lib/fs-tools.js";
+
+import BlogPostsModel from "./model.js";
 
 const { NotFound, Unauthorized, BadRequest } = httpErrors;
 const blogPostsRouter = express.Router();
@@ -26,24 +25,43 @@ const writeBlogPosts = (blogPostsArray) =>
 
 //POST http://localhost:3001/blogPosts/ (+body)
 
-blogPostsRouter.get("/", (req, res) => {
+/* blogPostsRouter.get("/", (req, res) => {
   const blogPostsArray = getBlogPosts();
   res.send(blogPostsArray);
+}); */
+
+blogPostsRouter.get("/", async (req, res, next) => {
+  try {
+    const blogPosts = await BlogPostsModel.find();
+    res.send(blogPosts);
+  } catch (error) {
+    next(error);
+  }
 });
 
 //POST http://localhost:3001/blogPosts/ (+body)
 
-blogPostsRouter.post("/", (req, res) => {
+/* blogPostsRouter.post("/", (req, res) => {
   const blogPostsArray = getBlogPosts();
   const newBlogPost = { ...req.body, createdAt: new Date(), _id: uniqid() };
   blogPostsArray.push(newBlogPost);
   writeBlogPosts(blogPostsArray);
   res.status(201).send({ _id: newBlogPost._id });
+}); */
+
+blogPostsRouter.post("/", async (req, res, next) => {
+  try {
+    const newBlogPost = new BlogPostsModel(req.body);
+    await newBlogPost.save();
+    res.status(201).send(newBlogPost._id);
+  } catch (error) {
+    next(error);
+  }
 });
 
 //GET http://localhost:3001/blogPosts/:blogPostId
 
-blogPostsRouter.get("/:blogPostId", (req, res, next) => {
+/* blogPostsRouter.get("/:blogPostId", (req, res, next) => {
   try {
     const blogPostsArray = getBlogPosts();
     const blogPost = blogPostsArray.find(
@@ -61,10 +79,24 @@ blogPostsRouter.get("/:blogPostId", (req, res, next) => {
   } catch (error) {
     next(error);
   }
+}); */
+
+blogPostsRouter.get("/:blogPostId", async (req, res, next) => {
+  try {
+    const blogPost = await BlogPostsModel.findById(req.params.blogPostId);
+
+    if (blogPost) {
+      res.send(blogPost);
+    } else {
+      next(NotFound(`Blog post with id ${req.params.blogPostId} not found!`));
+    }
+  } catch (error) {
+    next(error);
+  }
 });
 
 //PUT http://localhost:3001/blogPosts/:blogPostId (+ body)
-blogPostsRouter.put("/:blogPostId", (req, res) => {
+/* blogPostsRouter.put("/:blogPostId", (req, res) => {
   const blogPostArray = getBlogPosts();
   const index = blogPostArray.findIndex(
     (blogPost) => blogPost._id === req.params.blogPostId
@@ -78,10 +110,30 @@ blogPostsRouter.put("/:blogPostId", (req, res) => {
   blogPostArray[index] = updatedBlogPost;
   writeBlogPosts(blogPostArray);
   res.send(updatedBlogPost);
+}); */
+
+blogPostsRouter.put("/:blogPostId", async (req, res, next) => {
+  try {
+    const updatedBlogPost = await BlogPostsModel.findByIdAndUpdate(
+      req.params.blogPostId,
+      req.body,
+      { new: true, runValidators: true }
+      //if you want to get back the newly updated record, you need to set new: true)
+      //By default validation is off here --> set runValidators:true
+    );
+
+    if (updatedBlogPost) {
+      res.send(updatedBlogPost);
+    } else {
+      next(NotFound(`Blog post with id ${req.params.blogPostId} not found!`));
+    }
+  } catch (error) {
+    next(error);
+  }
 });
 
 //DELETE http://localhost:3001/blogPosts/:blogPostId
-blogPostsRouter.delete("/:blogPostId", (req, res) => {
+/* blogPostsRouter.delete("/:blogPostId", (req, res) => {
   const blogPostsArray = getBlogPosts();
   const remainingBlogPosts = blogPostsArray.filter(
     (blogPost) => blogPost._id !== req.params.blogPostId
@@ -89,5 +141,20 @@ blogPostsRouter.delete("/:blogPostId", (req, res) => {
   writeBlogPosts(remainingBlogPosts);
   res.send();
 });
+ */
 
+blogPostsRouter.delete("/:blogPostId", async (req, res, next) => {
+  try {
+    const deletedBlogPost = await BlogPostsModel.findByIdAndDelete(
+      req.params.blogPostId
+    );
+    if (deletedBlogPost) {
+      res.status(204).end();
+    } else {
+      next(NotFound(`Blog post with id ${req.params.blogPostId} not found!`));
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 export default blogPostsRouter;
