@@ -260,9 +260,20 @@ blogPostsRouter.put(
 
 //delete the comment belonging to the specified blog post
 blogPostsRouter.delete(
-  "/:blogPostId/comment/:commentId",
+  "/:blogPostId/comments/:commentId",
   async (req, res, next) => {
     try {
+      const updatedBlogPost = await BlogPostsModel.findByIdAndUpdate(
+        req.params.blogPostId,
+        { $pull: { comments: { _id: req.params.commentId } } },
+        { new: true }
+      );
+
+      if (updatedBlogPost) {
+        res.send(updatedBlogPost);
+      } else {
+        next(NotFound(`BlogPost with id ${req.params.blogPostId} not found!`));
+      }
     } catch (error) {
       next(error);
     }
