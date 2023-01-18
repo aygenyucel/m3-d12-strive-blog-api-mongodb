@@ -15,6 +15,12 @@ const blogPostsSchema = new Schema(
       avatar: { type: String },
     },
     content: { type: String },
+    comments: [
+      {
+        comment: String,
+        user: String,
+      },
+    ],
   },
   {
     timestamps: true, //for creating automatically createdAt & updatedAt fields

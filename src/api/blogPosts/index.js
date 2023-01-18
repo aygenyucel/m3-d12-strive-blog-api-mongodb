@@ -14,6 +14,7 @@ import httpErrors from "http-errors";
 import { blogPostsJSONPath } from "../lib/fs-tools.js";
 
 import BlogPostsModel from "./model.js";
+import CommentsModel from "../comments/model.js";
 
 const { NotFound, Unauthorized, BadRequest } = httpErrors;
 const blogPostsRouter = express.Router();
@@ -157,4 +158,76 @@ blogPostsRouter.delete("/:blogPostId", async (req, res, next) => {
     next(error);
   }
 });
+
+//adds a new comment for the specified blog post
+blogPostsRouter.post("/:blogPostId", async (req, res, next) => {
+  try {
+    const blogPost = BlogPostsModel.findById(req.params.blogPostId);
+
+    if (blogPost) {
+      const newComment = new CommentsModel(req.body);
+
+      const newCommentToInsert = {
+        ...newComment.toObject(),
+        commentDate: new Date(),
+      };
+      console.log("newComment:", newComment);
+      console.log("comment object to insert:", newCommentToInsert);
+
+      const updatedBlogPost = await BlogPostsModel.findByIdAndUpdate(
+        req.params.blogPostId,
+        { $push: { comments: newCommentToInsert } },
+        { new: true, runValidators: true }
+      );
+
+      res.send(updatedBlogPost);
+    } else {
+      next(NotFound(`BlogPost with id ${req.params.blogPostId} not found!`));
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+//returns all the comments for the specified blog post
+blogPostsRouter.get("/:blogPostId/comments", async (req, res, next) => {
+  try {
+  } catch (error) {
+    next(error);
+  }
+});
+
+//returns a single comment for the specified blog post
+blogPostsRouter.get(
+  "/:blogPostId/comments/:commentId",
+  async (req, res, next) => {
+    try {
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+//edit the comment belonging to the specified blog post
+blogPostsRouter.put(
+  "/:blogPostId/comment/:commentId",
+  async (req, res, next) => {
+    try {
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+//delete the comment belonging to the specified blog post
+blogPostsRouter.delete(
+  "/:blogPostId/comment/:commentId",
+  async (req, res, next) => {
+    try {
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export default blogPostsRouter;
