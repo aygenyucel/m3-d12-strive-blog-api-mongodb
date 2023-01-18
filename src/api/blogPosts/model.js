@@ -1,6 +1,15 @@
 import mongoose, { model } from "mongoose";
 const { Schema } = mongoose;
 
+const commentsSchema = new Schema(
+  {
+    comment: { type: String, required: true },
+    user: { type: String, required: false },
+    commentDate: { type: Date, required: false },
+  },
+  { timestamps: true }
+);
+
 const blogPostsSchema = new Schema(
   {
     category: { type: String, required: true },
@@ -15,12 +24,7 @@ const blogPostsSchema = new Schema(
       avatar: { type: String },
     },
     content: { type: String },
-    comments: [
-      {
-        comment: String,
-        user: String,
-      },
-    ],
+    comments: [commentsSchema],
   },
   {
     timestamps: true, //for creating automatically createdAt & updatedAt fields
