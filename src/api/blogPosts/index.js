@@ -179,7 +179,6 @@ blogPostsRouter.post("/:blogPostId", async (req, res, next) => {
         { $push: { comments: newCommentToInsert } },
         { new: true, runValidators: true }
       );
-
       res.send(updatedBlogPost);
     } else {
       next(NotFound(`BlogPost with id ${req.params.blogPostId} not found!`));
@@ -192,6 +191,13 @@ blogPostsRouter.post("/:blogPostId", async (req, res, next) => {
 //returns all the comments for the specified blog post
 blogPostsRouter.get("/:blogPostId/comments", async (req, res, next) => {
   try {
+    const blogPost = await BlogPostsModel.findById(req.params.blogPostId);
+
+    if (blogPost) {
+      res.send(blogPost.comments);
+    } else {
+      next(NotFound(`BlogPost with id ${req.params.blogPostId} not found!`));
+    }
   } catch (error) {
     next(error);
   }
@@ -202,6 +208,19 @@ blogPostsRouter.get(
   "/:blogPostId/comments/:commentId",
   async (req, res, next) => {
     try {
+      const blogPost = await BlogPostsModel.findById(req.params.blogPostId);
+      if (blogPost) {
+        const comment = blogPost.comments.find(
+          (comment) => comment._id.toString() === req.params.commentId
+        );
+        if (comment) {
+          res.send(comment);
+        } else {
+          next(NotFound(`Comment with id ${req.params.commentId} not found!`));
+        }
+      } else {
+        next(NotFound(`BlogPost with id ${req.params.blogPostId} not found!`));
+      }
     } catch (error) {
       next(error);
     }
