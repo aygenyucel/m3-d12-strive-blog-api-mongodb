@@ -15,6 +15,7 @@ import { blogPostsJSONPath } from "../lib/fs-tools.js";
 
 import BlogPostsModel from "./model.js";
 import CommentsModel from "../comments/model.js";
+import { userInfo } from "os";
 
 const { NotFound, Unauthorized, BadRequest } = httpErrors;
 const blogPostsRouter = express.Router();
@@ -229,8 +230,27 @@ blogPostsRouter.get(
 
 //edit the comment belonging to the specified blog post
 blogPostsRouter.put(
-  "/:blogPostId/comment/:commentId",
+  "/:blogPostId/comments/:commentId",
   async (req, res, next) => {
+    const blogPost = await BlogPostsModel.findById(req.params.blogPostId);
+    if (blogPost) {
+      const index = blogPost.comments.findIndex(
+        (comment) => comment._id.toString() === req.params.commentId
+      );
+      if (index !== -1) {
+        blogPost.comments[index] = {
+          ...blogPost.comments[index].toObject(),
+          ...req.body,
+        };
+      } else {
+        next(NotFound(`Comment with id ${req.params.commentId} not found!`));
+      }
+
+      await blogPost.save();
+      res.send(blogPost);
+    } else {
+      next(NotFound(`BlogPost with id ${req.params.blogPostId} not found!`));
+    }
     try {
     } catch (error) {
       next(error);
