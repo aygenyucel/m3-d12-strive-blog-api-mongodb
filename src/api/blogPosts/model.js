@@ -22,6 +22,14 @@ const blogPostsSchema = new Schema(
     content: { type: String },
     comments: [commentsSchema],
     authors: [{ type: Schema.Types.ObjectId, ref: "Author" }],
+    likes: [
+      {
+        authorId: {
+          type: mongoose.Types.ObjectId,
+          ref: "Author",
+        },
+      },
+    ],
   },
   {
     timestamps: true, //for creating automatically createdAt & updatedAt fields

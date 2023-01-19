@@ -15,6 +15,7 @@ import { blogPostsJSONPath } from "../lib/fs-tools.js";
 
 import BlogPostsModel from "./model.js";
 import { userInfo } from "os";
+import createHttpError from "http-errors";
 
 const { NotFound, Unauthorized, BadRequest } = httpErrors;
 const blogPostsRouter = express.Router();
@@ -84,7 +85,12 @@ blogPostsRouter.post("/", async (req, res, next) => {
 
 blogPostsRouter.get("/:blogPostId", async (req, res, next) => {
   try {
-    const blogPost = await BlogPostsModel.findById(req.params.blogPostId);
+    const blogPost = await BlogPostsModel.findById(
+      req.params.blogPostId
+    ).populate({
+      path: "authors",
+      select: "firstName lastName",
+    });
 
     if (blogPost) {
       res.send(blogPost);
@@ -280,5 +286,37 @@ blogPostsRouter.delete(
     }
   }
 );
+
+blogPostsRouter.post("/:blogPostId/like", async (req, res, next) => {
+  try {
+    const { authorId } = req.body;
+
+    const blogPost = await BlogPostsModel.findById(req.params.blogPostId);
+    console.log("blogPost:", blogPost);
+    if (!blogPost)
+      return next(
+        createHttpError(
+          404,
+          `BlogPost with id ${req.params.blogPostId} not found!`
+        )
+      );
+
+    const isAuthorThere = blogPost.likes.find(
+      (like) => like.authorId === authorId
+    );
+
+    if (!isAuthorThere) {
+      const modifiedBlogPost = await BlogPostsModel.findByIdAndUpdate(
+        req.params.blogPostId,
+        { $push: { likes: { authorId: authorId } } },
+        { new: true, runValidator: true, upsert: true }
+      );
+
+      res.send(modifiedBlogPost);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 
 export default blogPostsRouter;
