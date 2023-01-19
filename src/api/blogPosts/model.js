@@ -19,12 +19,9 @@ const blogPostsSchema = new Schema(
       value: { type: Number },
       unit: { type: String },
     },
-    author: {
-      name: { type: String },
-      avatar: { type: String },
-    },
     content: { type: String },
     comments: [commentsSchema],
+    authors: [{ type: Schema.Types.ObjectId, ref: "Author" }],
   },
   {
     timestamps: true, //for creating automatically createdAt & updatedAt fields

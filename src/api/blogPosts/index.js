@@ -14,7 +14,6 @@ import httpErrors from "http-errors";
 import { blogPostsJSONPath } from "../lib/fs-tools.js";
 
 import BlogPostsModel from "./model.js";
-import CommentsModel from "../comments/model.js";
 import { userInfo } from "os";
 
 const { NotFound, Unauthorized, BadRequest } = httpErrors;
@@ -159,6 +158,8 @@ blogPostsRouter.delete("/:blogPostId", async (req, res, next) => {
     next(error);
   }
 });
+
+//*********************************************************************************/
 
 //adds a new comment for the specified blog post
 blogPostsRouter.post("/:blogPostId", async (req, res, next) => {
